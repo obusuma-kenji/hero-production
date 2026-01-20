@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HERO診断 - 心理的資本育成プラットフォーム | 無料e-book配布中</title>
+    <meta name="description" content="あなたの内なる力を可視化し、成長へと導く心理的資本（HERO）診断ツール。無料診断で希望・自己効力感・レジリエンス・楽観性を測定し、30日間の育成プランを提供します。">
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            line-height: 1.6;
+            color: #1f2937;
+            scroll-behavior: smooth;
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 64px;
+        }
+        
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #2563eb 0%, #9333ea 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-links {
+            display: none;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: #374151;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #2563eb;
+        }
+        
+        .nav-cta {
+            background: linear-gradient(135deg, #2563eb 0%, #9333ea 100%);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 9999px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .nav-cta:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8rem 1rem 5rem;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.9;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .btn-primary {
+            background: white;
+            color: #764ba2;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.125rem;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+        
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .btn-secondary {
+            background: rgba(118, 75, 162, 0.5);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.125rem;
+            border: 2px solid white;
+            transition: background 0.3s;
+            display: inline-block;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(118, 75, 162, 0.7);
+        }
+        
+        /* Stats Section */
+        .stats {
+            background: #f9fafb;
+            padding: 4rem 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-number.blue { color: #2563eb; }
+        .stat-number.green { color: #10b981; }
+        .stat-number.purple { color: #9333ea; }
+        
+        /* Section */
+        .section {
+            padding: 5rem 1rem;
+            background: white;
+        }
+        
+        .section-alt {
+            padding: 5rem 1rem;
+            background: #f9fafb;
+        }
+        
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #2563eb 0%, #9333ea 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .section-subtitle {
+            font-size: 1.25rem;
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 4rem;
+            max-width: 48rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            max-width: 1280px;
+            margin: 0 auto 4rem;
+        }
+        
+        .card {
+            padding: 2rem;
+            border-radius: 1.5rem;
+            border: 2px solid;
+            transition: all 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .card.blue {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-color: #93c5fd;
+        }
+        
+        .card.green {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-color: #6ee7b7;
+        }
+        
+        .card.orange {
+            background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+            border-color: #fb923c;
+        }
+        
+        .card.yellow {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-color: #fbbf24;
+        }
+        
+        .card-icon {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-icon.blue { background: #2563eb; }
+        .card-icon.green { background: #10b981; }
+        .card-icon.orange { background: #ea580c; }
+        .card-icon.yellow { background: #eab308; }
+        
+        .card-icon svg {
+            width: 2rem;
+            height: 2rem;
+            color: white;
+        }
+        
+        .card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+        
+        .card.blue h3 { color: #1e3a8a; }
+        .card.green h3 { color: #065f46; }
+        .card.orange h3 { color: #7c2d12; }
+        .card.yellow h3 { color: #78350f; }
+        
+        .card p {
+            margin-bottom: 1rem;
+        }
+        
+        .card ul {
+            list-style: none;
+            font-size: 0.875rem;
+        }
+        
+        .card ul li {
+            margin-bottom: 0.5rem;
+        }
+        
+        /* E-book Section */
+        .ebook-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 3rem;
+            align-items: center;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        
+        .ebook-badge {
+            display: inline-block;
+            background: #d1fae5;
+            color: #065f46;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .ebook-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+        }
+        
+        .ebook-highlight {
+            background: linear-gradient(135deg, #10b981 0%, #2563eb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .feature-list {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+        
+        .feature-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-icon {
+            width: 1.5rem;
+            height: 1.5rem;
+            color: #10b981;
+            flex-shrink: 0;
+            margin-top: 0.25rem;
+        }
+        
+        .toc-box {
+            background: linear-gradient(135deg, #d1fae5 0%, #dbeafe 100%);
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .toc-inner {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+        }
+        
+        .toc-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .toc-list {
+            list-style: none;
+        }
+        
+        .toc-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .chapter-number {
+            font-weight: 700;
+        }
+        
+        .chapter-number.blue { color: #2563eb; }
+        .chapter-number.green { color: #10b981; }
+        .chapter-number.orange { color: #ea580c; }
+        .chapter-number.yellow { color: #eab308; }
+        .chapter-number.purple { color: #9333ea; }
+        .chapter-number.indigo { color: #6366f1; }
+        .chapter-number.pink { color: #ec4899; }
+        
+        /* Plan Grid */
+        .plan-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        
+        .plan-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        .plan-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .plan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .plan-number {
+            font-size: 3rem;
+            font-weight: 900;
+        }
+        
+        .plan-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .plan-tasks {
+            list-style: none;
+            font-size: 0.875rem;
+        }
+        
+        .plan-tasks li {
+            margin-bottom: 0.5rem;
+        }
+        
+        /* CTA Section */
+        .cta {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 5rem 1rem;
+            text-align: center;
+        }
+        
+        .cta h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+        }
+        
+        .cta p {
+            font-size: 1.25rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.9;
+        }
+        
+        /* Footer */
+        footer {
+            background: #111827;
+            color: white;
+            padding: 3rem 1rem;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            max-width: 1280px;
+            margin: 0 auto 2rem;
+        }
+        
+        .footer-section h3, .footer-section h4 {
+            margin-bottom: 1rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links a {
+            color: #9ca3af;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.5rem;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid #374151;
+            padding-top: 2rem;
+            text-align: center;
+            color: #9ca3af;
+        }
+        
+        /* Responsive */
+        @media (min-width: 768px) {
+            .nav-links {
+                display: flex;
+            }
+            
+            .hero-buttons {
+                flex-direction: row;
+                justify-content: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .ebook-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .plan-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .footer-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .cards-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .plan-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        /* Scroll margin for anchor links */
+        #diagnosis-tool {
+            scroll-margin-top: 80px;
+        }
+    </style>
+</head>
+<body>
+    <!-- ナビゲーション -->
+    <nav>
+        <div class="nav-container">
+            <div class="nav-logo">HERO診断</div>
+            <div class="nav-links">
+                <a href="#about">HEROとは</a>
+                <a href="#diagnosis-tool">診断を受ける</a>
+                <a href="psycap_ebook.pdf" download>無料e-book</a>
+                <a href="#plan">30日プラン</a>
+            </div>
+            <a href="#diagnosis-tool" class="nav-cta">今すぐ診断</a>
+        </div>
+    </nav>
+
+    <!-- ヒーローセクション -->
+    <section class="hero">
+        <div class="container">
+            <h1>内なるHEROを<br>目覚めさせる</h1>
+            <p>心理的資本診断で、あなたの成長可能性を可視化</p>
+            <p style="font-size: 1.125rem; opacity: 0.8; max-width: 48rem; margin: 0 auto 2.5rem;">
+                5分で完了する科学的診断で、希望・自己効力感・レジリエンス・楽観性の4要素を測定。<br>
+                パーソナライズされた育成プランで、持続的な成長を実現します。
+            </p>
+            <div class="hero-buttons">
+                <a href="#diagnosis-tool" class="btn-primary">無料で診断を始める →</a>
+                <a href="psycap_ebook.pdf" download class="btn-secondary">📖 無料e-bookをダウンロード</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 統計セクション -->
+    <section class="stats">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number blue">5分</div>
+                <p style="color: #6b7280; font-weight: 500;">診断完了時間</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number green">4要素</div>
+                <p style="color: #6b7280; font-weight: 500;">科学的測定項目</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number purple">30日</div>
+                <p style="color: #6b7280; font-weight: 500;">育成プログラム</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- HEROとは -->
+    <section id="about" class="section">
+        <div class="container">
+            <h2 class="section-title">心理的資本（HERO）とは</h2>
+            <p class="section-subtitle">困難な状況でも成果を出し続けるための「開発可能な内的資源」</p>
+
+            <div class="cards-grid">
+                <div class="card blue">
+                    <div class="card-icon blue">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3>Hope<br>（希望）</h3>
+                    <p style="color: #1e40af; margin-bottom: 1rem;">目標達成に向けた意志力と経路設定力</p>
+                    <ul style="color: #1e3a8a;">
+                        <li>• 明確な目標設定</li>
+                        <li>• 複数の経路思考</li>
+                        <li>• 粘り強い実行力</li>
+                    </ul>
+                </div>
+
+                <div class="card green">
+                    <div class="card-icon green">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3>Efficacy<br>（自己効力感）</h3>
+                    <p style="color: #047857; margin-bottom: 1rem;">「できる」という確信と行動力</p>
+                    <ul style="color: #065f46;">
+                        <li>• 能力への信念</li>
+                        <li>• 達成経験の蓄積</li>
+                        <li>• 挑戦への意欲</li>
+                    </ul>
+                </div>
+
+                <div class="card orange">
+                    <div class="card-icon orange">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                    </div>
+                    <h3>Resilience<br>（レジリエンス）</h3>
+                    <p style="color: #c2410c; margin-bottom: 1rem;">逆境から立ち直り、前に進む力</p>
+                    <ul style="color: #7c2d12;">
+                        <li>• 回復力の強化</li>
+                        <li>• 柔軟な適応力</li>
+                        <li>• 学習志向</li>
+                    </ul>
+                </div>
+
+                <div class="card yellow">
+                    <div class="card-icon yellow">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                    </div>
+                    <h3>Optimism<br>（楽観性）</h3>
+                    <p style="color: #a16207; margin-bottom: 1rem;">前向きで建設的な解釈力</p>
+                    <ul style="color: #78350f;">
+                        <li>• ポジティブ思考</li>
+                        <li>• 現実的な楽観</li>
+                        <li>• 成長マインドセット</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 診断ツールセクション -->
+    <section id="diagnosis-tool" class="section-alt">
+        <div class="container">
+            <h2 class="section-title">無料HERO診断ツール</h2>
+            <p class="section-subtitle">全20問・約5分で、あなたの心理的資本の現状を科学的に測定します</p>
+            <div id="hero-platform-root"></div>
+        </div>
+    </section>
+
+    <!-- e-bookセクション -->
+    <section id="ebook" class="section">
+        <div class="container">
+            <div class="ebook-grid">
+                <div>
+                    <div class="ebook-badge">📖 無料ダウンロード</div>
+                    <h2 class="ebook-title">
+                        実践ガイドe-book<br>
+                        <span class="ebook-highlight">「内なるHEROを目覚めさせ」</span>
+                    </h2>
+                    <p style="font-size: 1.25rem; color: #374151; margin-bottom: 1.5rem;">
+                        心理的資本の理論から実践まで、全8章で徹底解説
+                    </p>
+                    
+                    <ul class="feature-list">
+                        <li class="feature-item">
+                            <svg class="feature-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <div>
+                                <h4 style="font-weight: 700; color: #1f2937;">第1章〜第6章：HERO完全理解</h4>
+                                <p style="color: #6b7280;">各要素の理論的背景と育成方法を詳しく解説</p>
+                            </div>
+                        </li>
+                        <li class="feature-item">
+                            <svg class="feature-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <div>
+                                <h4 style="font-weight: 700; color: #1f2937;">第7章：組織での活用法</h4>
+                                <p style="color: #6b7280;">職場・チームで心理的資本を高める方法</p>
+                            </div>
+                        </li>
+                        <li class="feature-item">
+                            <svg class="feature-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <div>
+                                <h4 style="font-weight: 700; color: #1f2937;">第8章：習慣化の技術</h4>
+                                <p style="color: #6b7280;">日常生活で継続的に育て続ける方法</p>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <a href="psycap_ebook.pdf" download class="btn-primary" style="background: linear-gradient(135deg, #10b981 0%, #2563eb 100%); color: white;">
+                        今すぐ無料でダウンロード →
+                    </a>
+                    <p style="font-size: 0.875rem; color: #6b7280; margin-top: 0.75rem;">メールアドレス登録不要・即時ダウンロード可能（PDF 997KB）</p>
+                </div>
+
+                <div class="toc-box">
+                    <div class="toc-inner">
+                        <div style="text-align: center; margin-bottom: 1.5rem;">
+                            <div class="toc-icon">📖</div>
+                            <h3 style="font-size: 1.5rem; font-weight: 700; color: #1f2937; margin-bottom: 0.5rem;">e-book目次</h3>
+                        </div>
+                        <ul class="toc-list">
+                            <li class="toc-item">
+                                <span class="chapter-number blue">第1章</span>
+                                <span>心理的資本とは何か</span>
+                            </li>
+                            <li class="toc-item">
+                                <span class="chapter-number blue">第2章</span>
+                                <span>希望（Hope）を育む</span>
+                            </li>
+                            <li class="toc-item">
+                                <span class="chapter-number green">第3章</span>
+                                <span>自己効力感（Efficacy）を高める</span>
+                            </li>
+                            <li class="toc-item">
+                                <span class="chapter-number orange">第4章</span>
+                                <span>レジリエンス（Resilience）を強化する</span>
+                            </li>
+                            <li class="toc-item">
+                                <span class="chapter-number yellow">第5章</span>
+                                <span>楽観性（Optimism）を養う</span>
+                            </li>
+                            <li class="toc-item">
+                                <span class="chapter-number purple">第6章</span>
+                                <span>HERO統合と実践</span>
+                            </li>
+                            <li class="toc-item">
+                                <span class="chapter-number indigo">第7章</span>
+                                <span>職場・組織で活かす</span>
+                            </li>
+                            <li class="toc-item">
+                                <span class="chapter-number pink">第8章</span>
+                                <span>日常で育て続ける</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 30日育成プラン -->
+    <section id="plan" class="section-alt">
+        <div class="container">
+            <h2 class="section-title">HERO 30日育成プラン</h2>
+            <p class="section-subtitle">診断結果に基づいた、あなた専用の4週間プログラム</p>
+
+            <div class="plan-grid">
+                <div class="plan-card">
+                    <div class="plan-header">
+                        <span class="plan-number" style="color: #2563eb;">01</span>
+                        <div class="plan-icon" style="background: #dbeafe;">
+                            <svg style="width: 1.5rem; height: 1.5rem; color: #2563eb;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.75rem;">楽観性と希望の調整</h3>
+                    <p style="color: #6b7280; margin-bottom: 1rem;">認知と方向性を整える</p>
+                    <ul class="plan-tasks" style="color: #374151;">
+                        <li>• 出来事と解釈の分離</li>
+                        <li>• 重点目標の設定</li>
+                        <li>• 代替ルート思考</li>
+                        <li>• 週次振り返り</li>
+                    </ul>
+                </div>
+
+                <div class="plan-card">
+                    <div class="plan-header">
+                        <span class="plan-number" style="color: #10b981;">02</span>
+                        <div class="plan-icon" style="background: #d1fae5;">
+                            <svg style="width: 1.5rem; height: 1.5rem; color: #10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.75rem;">自己効力感の構築</h3>
+                    <p style="color: #6b7280; margin-bottom: 1rem;">動ける感覚を回復</p>
+                    <ul class="plan-tasks" style="color: #374151;">
+                        <li>• 達成可能な課題設定</li>
+                        <li>• 小さな成功の記録</li>
+                        <li>• 成功体験の言語化</li>
+                        <li>• フィードバック取得</li>
+                    </ul>
+                </div>
+
+                <div class="plan-card">
+                    <div class="plan-header">
+                        <span class="plan-number" style="color: #ea580c;">03</span>
+                        <div class="plan-icon" style="background: #fed7aa;">
+                            <svg style="width: 1.5rem; height: 1.5rem; color: #ea580c;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.75rem;">レジリエンスの強化</h3>
+                    <p style="color: #6b7280; margin-bottom: 1rem;">再起プロセスの安定化</p>
+                    <ul class="plan-tasks" style="color: #374151;">
+                        <li>• 失敗の振り返り</li>
+                        <li>• 意味づけの書き直し</li>
+                        <li>• 小さな次の行動</li>
+                        <li>• ストレス対処法実践</li>
+                    </ul>
+                </div>
+
+                <div class="plan-card">
+                    <div class="plan-header">
+                        <span class="plan-number" style="color: #9333ea;">04</span>
+                        <div class="plan-icon" style="background: #e9d5ff;">
+                            <svg style="width: 1.5rem; height: 1.5rem; color: #9333ea;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.75rem;">統合と循環の確認</h3>
+                    <p style="color: #6b7280; margin-bottom: 1rem;">習慣として定着</p>
+                    <ul class="plan-tasks" style="color: #374151;">
+                        <li>• 4要素の自己評価</li>
+                        <li>• 行動と成果の整理</li>
+                        <li>• 習慣化する行動選定</li>
+                        <li>• 次月テーマ決定</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="margin-top: 3rem; text-align: center;">
+                <div style="background: linear-gradient(135deg, #e9d5ff 0%, #dbeafe 100%); padding: 2rem; border-radius: 1.5rem; display: inline-block; max-width: 48rem;">
+                    <p style="font-size: 1.125rem; color: #374151; margin-bottom: 1rem;">
+                        <span style="font-weight: 700; color: #7c3aed;">診断完了後、すぐに利用可能</span><br>
+                        あなたの弱点領域に特化したプランが自動生成されます
+                    </p>
+                    <a href="#diagnosis-tool" style="display: inline-block; background: linear-gradient(135deg, #9333ea 0%, #2563eb 100%); color: white; padding: 0.75rem 2rem; border-radius: 9999px; font-weight: 700; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 10px 25px rgba(0,0,0,0.2)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+                        診断を受けてプランを取得 →
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTAセクション -->
+    <section class="cta">
+        <div class="container">
+            <h2>今すぐ、あなたのHEROを<br>目覚めさせましょう</h2>
+            <p>無料診断は5分で完了。診断結果は即座に確認できます。</p>
+            <div class="hero-buttons">
+                <a href="#diagnosis-tool" class="btn-primary">無料診断を始める</a>
+                <a href="psycap_ebook.pdf" download class="btn-secondary">e-bookをダウンロード</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- フッター -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-section">
+                <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;">HERO診断</h3>
+                <p style="color: #9ca3af;">
+                    心理的資本育成プラットフォーム<br>
+                    あなたの内的資源を可視化し、<br>
+                    持続的な成長を支援します。
+                </p>
+            </div>
+            <div class="footer-section">
+                <h4 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 1rem;">リンク</h4>
+                <ul class="footer-links">
+                    <li><a href="#about">HEROとは</a></li>
+                    <li><a href="#diagnosis-tool">診断ツール</a></li>
+                    <li><a href="psycap_ebook.pdf" download>無料e-book</a></li>
+                    <li><a href="#plan">30日プラン</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 1rem;">提供元</h4>
+                <p style="color: #9ca3af;">
+                    Obusuma Social Insurance Labor Office<br>
+                    小渕総合社会保険労務士事務所
+                </p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 HERO Platform - Psychological Capital Development. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- React診断ツールのスクリプト（前回と同じコード） -->
+    <script type="text/babel">
+        const { useState } = React;
+        
+        const HEROPlatform = () => {
+          const [stage, setStage] = useState('welcome');
+          const [currentQuestion, setCurrentQuestion] = useState(0);
+          const [answers, setAnswers] = useState({});
+          const [scores, setScores] = useState(null);
+
+          const questions = [
+            { id: 'h1', category: 'hope', text: '困難な状況でも、複数の解決策を思いつくことができる' },
+            { id: 'h2', category: 'hope', text: '明確な目標を設定し、それに向けた具体的な計画を立てている' },
+            { id: 'h3', category: 'hope', text: '一つの方法が上手くいかなくても、別のアプローチを試すことができる' },
+            { id: 'h4', category: 'hope', text: '自分の目標達成に強い意欲を感じている' },
+            { id: 'h5', category: 'hope', text: '将来の目標に向けて、着実に進んでいると感じる' },
+            
+            { id: 'e1', category: 'efficacy', text: '仕事や課題において、自分の能力に自信がある' },
+            { id: 'e2', category: 'efficacy', text: '困難な課題に直面しても、乗り越えられると信じている' },
+            { id: 'e3', category: 'efficacy', text: '新しいことに挑戦する際、成功できると思える' },
+            { id: 'e4', category: 'efficacy', text: '自分のスキルや経験を活かして成果を出せる' },
+            { id: 'e5', category: 'efficacy', text: '困難な状況でも、必要な行動を取ることができる' },
+            
+            { id: 'r1', category: 'resilience', text: '失敗や挫折から立ち直ることができる' },
+            { id: 'r2', category: 'resilience', text: 'ストレスの多い状況でも、冷静に対処できる' },
+            { id: 'r3', category: 'resilience', text: '困難な経験を成長の機会として捉えることができる' },
+            { id: 'r4', category: 'resilience', text: '予期せぬ変化にも柔軟に適応できる' },
+            { id: 'r5', category: 'resilience', text: '失敗を経験として活かし、次に繋げることができる' },
+            
+            { id: 'o1', category: 'optimism', text: '良いことが起こると期待して日々を過ごしている' },
+            { id: 'o2', category: 'optimism', text: '困難な状況も一時的なものだと捉えることができる' },
+            { id: 'o3', category: 'optimism', text: '失敗の原因を特定の状況に限定して考えることができる' },
+            { id: 'o4', category: 'optimism', text: '将来に対して前向きな見通しを持っている' },
+            { id: 'o5', category: 'optimism', text: '困難な出来事の中にも、良い側面を見つけることができる' },
+          ];
+
+          const calculateScores = () => {
+            const categoryScores = { hope: 0, efficacy: 0, resilience: 0, optimism: 0 };
+            questions.forEach(q => {
+              if (answers[q.id]) categoryScores[q.category] += answers[q.id];
+            });
+            return {
+              hope: Math.round((categoryScores.hope / 25) * 100),
+              efficacy: Math.round((categoryScores.efficacy / 25) * 100),
+              resilience: Math.round((categoryScores.resilience / 25) * 100),
+              optimism: Math.round((categoryScores.optimism / 25) * 100)
+            };
+          };
+
+          const handleAnswer = (value) => {
+            setAnswers({ ...answers, [questions[currentQuestion].id]: value });
+            if (currentQuestion < questions.length - 1) {
+              setTimeout(() => setCurrentQuestion(currentQuestion + 1), 300);
+            } else {
+              setTimeout(() => {
+                setScores(calculateScores());
+                setStage('results');
+              }, 300);
+            }
+          };
+
+          const getWeakestArea = () => {
+            if (!scores) return null;
+            const areas = [
+              { name: 'hope', label: '希望', score: scores.hope },
+              { name: 'efficacy', label: '自己効力感', score: scores.efficacy },
+              { name: 'resilience', label: 'レジリエンス', score: scores.resilience },
+              { name: 'optimism', label: '楽観性', score: scores.optimism }
+            ];
+            return areas.reduce((min, area) => area.score < min.score ? area : min);
+          };
+
+          const getDevelopmentAdvice = () => {
+            const weakest = getWeakestArea();
+            if (!weakest) return null;
+            const advice = {
+              hope: {
+                title: '希望を育むために',
+                tips: [
+                  '明確で測定可能な目標を設定しましょう',
+                  '目標達成のための複数の経路を考えましょう',
+                  '小さな成功体験を積み重ねましょう',
+                  '目標の「意味」を言語化しましょう'
+                ]
+              },
+              efficacy: {
+                title: '自己効力感を高めるために',
+                tips: [
+                  '達成可能な小さな課題から始めましょう',
+                  '成功体験を意識的に記録しましょう',
+                  '自分の強みを再確認しましょう',
+                  '具体的なフィードバックを求めましょう'
+                ]
+              },
+              resilience: {
+                title: 'レジリエンスを強化するために',
+                tips: [
+                  '失敗を学習の機会として捉え直しましょう',
+                  'ストレス対処法を複数持ちましょう',
+                  '困難な経験を振り返り、意味づけしましょう',
+                  '柔軟な思考を心がけましょう'
+                ]
+              },
+              optimism: {
+                title: '楽観性を養うために',
+                tips: [
+                  '出来事と解釈を分けて考えましょう',
+                  'ネガティブな解釈を建設的に書き換えましょう',
+                  '良い側面を見つける習慣をつけましょう',
+                  '一時性・限定性を意識しましょう'
+                ]
+              }
+            };
+            return { ...advice[weakest.name], weakest };
+          };
+
+          const CategoryBadge = ({ category }) => {
+            const styles = {
+              hope: { bg: '#dbeafe', color: '#1e40af' },
+              efficacy: { bg: '#d1fae5', color: '#065f46' },
+              resilience: { bg: '#fed7aa', color: '#7c2d12' },
+              optimism: { bg: '#fef3c7', color: '#78350f' }
+            };
+            const labels = {
+              hope: '希望',
+              efficacy: '自己効力感',
+              resilience: 'レジリエンス',
+              optimism: '楽観性'
+            };
+            const style = styles[category];
+            return (
+              <span style={{
+                display: 'inline-block',
+                padding: '0.5rem 1rem',
+                borderRadius: '9999px',
+                fontWeight: 500,
+                background: style.bg,
+                color: style.color
+              }}>
+                {labels[category]}
+              </span>
+            );
+          };
+
+          if (stage === 'welcome') {
+            return (
+              <div style={{
+                background: 'white',
+                borderRadius: '1.5rem',
+                boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+                padding: '3rem 2rem',
+                maxWidth: '56rem',
+                margin: '0 auto'
+              }}>
+                <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                  <h3 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '1rem' }}>診断を始める準備はできましたか？</h3>
+                  <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>
+                    全20問の質問に答えることで、あなたのHEROプロファイルが明らかになります
+                  </p>
+                </div>
+
+                <div style={{ background: '#f9fafb', padding: '1.5rem', borderRadius: '0.75rem', marginBottom: '1.5rem' }}>
+                  <h4 style={{ fontWeight: 700, marginBottom: '1rem' }}>診断の流れ</h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <div style={{ display: 'flex', gap: '1rem' }}>
+                      <div style={{
+                        width: '2rem',
+                        height: '2rem',
+                        background: '#2563eb',
+                        color: 'white',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                        fontWeight: 700
+                      }}>1</div>
+                      <div>
+                        <p style={{ fontWeight: 500 }}>質問に回答（約5分）</p>
+                        <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>各質問に5段階で答えます</p>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '1rem' }}>
+                      <div style={{
+                        width: '2rem',
+                        height: '2rem',
+                        background: '#10b981',
+                        color: 'white',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                        fontWeight: 700
+                      }}>2</div>
+                      <div>
+                        <p style={{ fontWeight: 500 }}>結果を確認</p>
+                        <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>4要素のスコアをグラフで表示</p>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '1rem' }}>
+                      <div style={{
+                        width: '2rem',
+                        height: '2rem',
+                        background: '#9333ea',
+                        color: 'white',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                        fontWeight: 700
+                      }}>3</div>
+                      <div>
+                        <p style={{ fontWeight: 500 }}>育成プランを取得</p>
+                        <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>あなた専用の30日プログラム</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setStage('assessment')}
+                  style={{
+                    width: '100%',
+                    background: 'linear-gradient(135deg, #2563eb 0%, #9333ea 100%)',
+                    color: 'white',
+                    padding: '1rem',
+                    borderRadius: '0.75rem',
+                    fontWeight: 700,
+                    fontSize: '1.125rem',
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s'
+                  }}
+                  onMouseOver={(e) => {
+                    e.target.style.transform = 'scale(1.05)';
+                    e.target.style.boxShadow = '0 10px 25px rgba(0,0,0,0.2)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.target.style.transform = '';
+                    e.target.style.boxShadow = '';
+                  }}
+                >
+                  診断を開始する →
+                </button>
+              </div>
+            );
+          }
+
+          if (stage === 'assessment') {
+            const currentQ = questions[currentQuestion];
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+
+            const categoryStyles = {
+              hope: { border: '#3b82f6', bg: '#eff6ff' },
+              efficacy: { border: '#10b981', bg: '#f0fdf4' },
+              resilience: { border: '#f97316', bg: '#fff7ed' },
+              optimism: { border: '#eab308', bg: '#fefce8' }
+            };
+
+            const style = categoryStyles[currentQ.category];
+
+            return (
+              <div style={{ maxWidth: '48rem', margin: '0 auto' }}>
+                <div style={{ marginBottom: '2rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                    <span style={{ fontSize: '0.875rem', fontWeight: 500, color: '#6b7280' }}>質問 {currentQuestion + 1} / {questions.length}</span>
+                    <span style={{ fontSize: '0.875rem', fontWeight: 500, color: '#6b7280' }}>{Math.round(progress)}%</span>
+                  </div>
+                  <div style={{ height: '0.5rem', background: '#e5e7eb', borderRadius: '9999px', overflow: 'hidden' }}>
+                    <div 
+                      style={{
+                        height: '100%',
+                        background: 'linear-gradient(to right, #3b82f6, #9333ea)',
+                        width: `${progress}%`,
+                        transition: 'width 0.5s'
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div style={{
+                  background: 'white',
+                  borderRadius: '1.5rem',
+                  boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+                  padding: '3rem 2rem'
+                }}>
+                  <div style={{ marginBottom: '1.5rem' }}>
+                    <CategoryBadge category={currentQ.category} />
+                  </div>
+                  
+                  <h3 style={{
+                    fontSize: 'clamp(1.5rem, 3vw, 2rem)',
+                    fontWeight: 700,
+                    marginBottom: '2rem',
+                    color: '#1f2937',
+                    lineHeight: 1.4
+                  }}>
+                    {currentQ.text}
+                  </h3>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    {[
+                      { value: 5, label: '非常に当てはまる' },
+                      { value: 4, label: '当てはまる' },
+                      { value: 3, label: 'どちらともいえない' },
+                      { value: 2, label: '当てはまらない' },
+                      { value: 1, label: '全く当てはまらない' }
+                    ].map(option => (
+                      <button
+                        key={option.value}
+                        onClick={() => handleAnswer(option.value)}
+                        style={{
+                          width: '100%',
+                          padding: '1rem',
+                          borderRadius: '0.75rem',
+                          border: `2px solid ${answers[currentQ.id] === option.value ? style.border : '#e5e7eb'}`,
+                          background: answers[currentQ.id] === option.value ? style.bg : 'white',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center'
+                        }}
+                        onMouseOver={(e) => {
+                          if (answers[currentQ.id] !== option.value) {
+                            e.target.style.borderColor = '#d1d5db';
+                            e.target.style.transform = 'scale(1.02)';
+                          }
+                        }}
+                        onMouseOut={(e) => {
+                          if (answers[currentQ.id] !== option.value) {
+                            e.target.style.borderColor = '#e5e7eb';
+                            e.target.style.transform = '';
+                          }
+                        }}
+                      >
+                        <span style={{ fontWeight: 500, color: '#1f2937' }}>{option.label}</span>
+                        <span style={{ fontSize: '0.875rem', color: '#9ca3af' }}>{option.value}点</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {currentQuestion > 0 && (
+                  <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+                    <button
+                      onClick={() => setCurrentQuestion(currentQuestion - 1)}
+                      style={{
+                        color: '#6b7280',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '1rem'
+                      }}
+                      onMouseOver={(e) => e.target.style.color = '#1f2937'}
+                      onMouseOut={(e) => e.target.style.color = '#6b7280'}
+                    >
+                      ← 前の質問に戻る
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          }
+
+          if (stage === 'results') {
+            const advice = getDevelopmentAdvice();
+
+            return (
+              <div style={{ maxWidth: '80rem', margin: '0 auto' }}>
+                <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                  <h3 style={{
+                    fontSize: 'clamp(2rem, 4vw, 3rem)',
+                    fontWeight: 900,
+                    marginBottom: '1rem',
+                    background: 'linear-gradient(135deg, #2563eb 0%, #9333ea 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text'
+                  }}>
+                    診断結果
+                  </h3>
+                  <p style={{ color: '#6b7280' }}>あなたの心理的資本（HERO）の状態</p>
+                </div>
+
+                <div style={{
+                  background: 'white',
+                  borderRadius: '1.5rem',
+                  boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+                  padding: '3rem 2rem',
+                  marginBottom: '2rem'
+                }}>
+                  <h4 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '2rem', textAlign: 'center' }}>HEROプロファイル</h4>
+
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                    gap: '1.5rem'
+                  }}>
+                    {[
+                      { key: 'hope', label: '希望', color: '#2563eb', bg: '#dbeafe' },
+                      { key: 'efficacy', label: '自己効力感', color: '#10b981', bg: '#d1fae5' },
+                      { key: 'resilience', label: 'レジリエンス', color: '#ea580c', bg: '#fed7aa' },
+                      { key: 'optimism', label: '楽観性', color: '#eab308', bg: '#fef3c7' }
+                    ].map(item => (
+                      <div key={item.key} style={{
+                        background: `linear-gradient(135deg, ${item.bg} 0%, ${item.bg} 100%)`,
+                        padding: '1.5rem',
+                        borderRadius: '1rem'
+                      }}>
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          marginBottom: '0.75rem'
+                        }}>
+                          <span style={{ fontWeight: 700, color: item.color }}>{item.label}</span>
+                          <span style={{ fontSize: '2rem', fontWeight: 900, color: item.color }}>{scores[item.key]}</span>
+                        </div>
+                        <div style={{
+                          height: '0.75rem',
+                          background: 'rgba(255,255,255,0.5)',
+                          borderRadius: '9999px',
+                          overflow: 'hidden'
+                        }}>
+                          <div 
+                            style={{
+                              height: '100%',
+                              background: item.color,
+                              width: `${scores[item.key]}%`,
+                              transition: 'width 1s'
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {advice && (
+                  <div style={{
+                    background: 'white',
+                    borderRadius: '1.5rem',
+                    boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+                    padding: '3rem 2rem',
+                    marginBottom: '2rem'
+                  }}>
+                    <h4 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1.5rem' }}>優先的に育成すべき領域</h4>
+                    
+                    <div style={{
+                      background: 'linear-gradient(135deg, #dbeafe 0%, #e9d5ff 100%)',
+                      padding: '1.5rem',
+                      borderRadius: '1rem'
+                    }}>
+                      <h5 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem' }}>{advice.title}</h5>
+                      <p style={{ color: '#374151', marginBottom: '1rem' }}>
+                        あなたの<span style={{ fontWeight: 700, color: '#2563eb' }}>{advice.weakest.label}</span>のスコアは {advice.weakest.score}点です。
+                        この領域を重点的に強化することで、他の要素も連動して向上します。
+                      </p>
+                      <ul style={{ listStyle: 'none', padding: 0 }}>
+                        {advice.tips.map((tip, index) => (
+                          <li key={index} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                            <span style={{ color: '#10b981' }}>✓</span>
+                            <span style={{ color: '#1f2937' }}>{tip}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
+
+                <div style={{ textAlign: 'center' }}>
+                  <p style={{ color: '#6b7280', marginBottom: '1rem' }}>詳細な30日育成プランは、上部の「30日プラン」セクションをご確認ください</p>
+                  <button
+                    onClick={() => setStage('welcome')}
+                    style={{
+                      background: '#f3f4f6',
+                      color: '#374151',
+                      padding: '0.75rem 2rem',
+                      borderRadius: '9999px',
+                      fontWeight: 700,
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'background 0.3s'
+                    }}
+                    onMouseOver={(e) => e.target.style.background = '#e5e7eb'}
+                    onMouseOut={(e) => e.target.style.background = '#f3f4f6'}
+                  >
+                    診断をやり直す
+                  </button>
+                </div>
+              </div>
+            );
+          }
+
+          return null;
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('hero-platform-root'));
+        root.render(<HEROPlatform />);
+    </script>
+</body>
+</html>
